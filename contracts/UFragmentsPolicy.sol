@@ -58,15 +58,8 @@ contract UFragmentsPolicy is Ownable {
     // Natural number, no decimal places.
     uint256 public rebaseLag;
 
-    // More than this much time must pass between rebase operations.
-    uint256 public minRebaseTimeIntervalSec;
-
     // Block timestamp of last rebase operation
     uint256 public lastRebaseTimestampSec;
-
-    // The rebase window begins this many seconds into the minRebaseTimeInterval period.
-    // For example if minRebaseTimeInterval is 24hrs, it represents the time of day in seconds.
-    uint256 public rebaseWindowOffsetSec;
 
     // The length of the time window where a rebase operation is allowed to execute, in seconds.
     uint256 public rebaseWindowLengthSec;
@@ -98,14 +91,9 @@ contract UFragmentsPolicy is Ownable {
      *      and targetRate is CpiOracleRate / baseCpi
      */
     function rebase() external onlyOrchestrator {
-        require(inRebaseWindow());
+        require(isNextWindow());
 
-        // This comparison also ensures there is no reentrancy.
-        require(lastRebaseTimestampSec.add(minRebaseTimeIntervalSec) < now);
-
-        // Snap the rebase time to the start of this window.
-        lastRebaseTimestampSec = now.sub(
-            now.mod(minRebaseTimeIntervalSec)).add(rebaseWindowOffsetSec);
+        lastRebaseTimestampSec = now;
 
         epoch = epoch.add(1);
 
@@ -204,27 +192,14 @@ contract UFragmentsPolicy is Ownable {
     /**
      * @notice Sets the parameters which control the timing and frequency of
      *         rebase operations.
-     *         a) the minimum time period that must elapse between rebase cycles.
-     *         b) the rebase window offset parameter.
-     *         c) the rebase window length parameter.
-     * @param minRebaseTimeIntervalSec_ More than this much time must pass between rebase
-     *        operations, in seconds.
-     * @param rebaseWindowOffsetSec_ The number of seconds from the beginning of
-              the rebase interval, where the rebase window begins.
      * @param rebaseWindowLengthSec_ The length of the rebase window in seconds.
      */
     function setRebaseTimingParameters(
-        uint256 minRebaseTimeIntervalSec_,
-        uint256 rebaseWindowOffsetSec_,
         uint256 rebaseWindowLengthSec_)
         external
         onlyOwner
     {
-        require(minRebaseTimeIntervalSec_ > 0);
-        require(rebaseWindowOffsetSec_ < minRebaseTimeIntervalSec_);
-
-        minRebaseTimeIntervalSec = minRebaseTimeIntervalSec_;
-        rebaseWindowOffsetSec = rebaseWindowOffsetSec_;
+        require(rebaseWindowLengthSec_ > 0);
         rebaseWindowLengthSec = rebaseWindowLengthSec_;
     }
 
@@ -243,9 +218,7 @@ contract UFragmentsPolicy is Ownable {
         deviationThreshold = 5 * 10 ** (DECIMALS-2);
 
         rebaseLag = 30;
-        minRebaseTimeIntervalSec = 1 days;
-        rebaseWindowOffsetSec = 72000;  // 8PM UTC
-        rebaseWindowLengthSec = 15 minutes;
+        rebaseWindowLengthSec = 1 days;
         lastRebaseTimestampSec = 0;
         epoch = 0;
 
@@ -254,14 +227,12 @@ contract UFragmentsPolicy is Ownable {
     }
 
     /**
-     * @return If the latest block timestamp is within the rebase time window it, returns true.
+     * @return If the latest block timestamp is within the new rebase time window it, returns true.
      *         Otherwise, returns false.
      */
-    function inRebaseWindow() public view returns (bool) {
-        return (
-            now.mod(minRebaseTimeIntervalSec) >= rebaseWindowOffsetSec &&
-            now.mod(minRebaseTimeIntervalSec) < (rebaseWindowOffsetSec.add(rebaseWindowLengthSec))
-        );
+    function isNextWindow() public view returns (bool)
+    {
+        return now.div(rebaseWindowLengthSec) > lastRebaseTimestampSec.div(rebaseWindowLengthSec);
     }
 
     /**
