@@ -41,7 +41,7 @@ contract UFragmentsPolicy is Ownable {
     IOracle public cpiOracle;
 
     // Market oracle provides the token/USD exchange rate as an 18 decimal fixed point number.
-    // (eg) An oracle value of 1.5e18 it would mean 1 Ample is trading for $1.50.
+    // (eg) An oracle value of 1.5e18 it would mean 1 Pion is trading for $1.50.
     IOracle public marketOracle;
 
     // CPI value at the time of launch, as an 18 decimal fixed point number.
