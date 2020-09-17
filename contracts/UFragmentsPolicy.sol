@@ -64,6 +64,9 @@ contract UFragmentsPolicy is Ownable {
     // The length of the time window where a rebase operation is allowed to execute, in seconds.
     uint256 public rebaseWindowLengthSec;
 
+    // The length of minimum interval between two rebases.
+    uint256 public minTimestampSecAfterLastRebase;
+
     // The number of rebase cycles since inception
     uint256 public epoch;
 
@@ -193,14 +196,18 @@ contract UFragmentsPolicy is Ownable {
      * @notice Sets the parameters which control the timing and frequency of
      *         rebase operations.
      * @param rebaseWindowLengthSec_ The length of the rebase window in seconds.
+     * @param minTimestampSecAfterLastRebase_ The length of minimum interval between two rebases in seconds.
      */
     function setRebaseTimingParameters(
-        uint256 rebaseWindowLengthSec_)
+        uint256 rebaseWindowLengthSec_,
+        uint256 minTimestampSecAfterLastRebase_)
         external
         onlyOwner
     {
         require(rebaseWindowLengthSec_ > 0);
+        require(minTimestampSecAfterLastRebase_ > 0);
         rebaseWindowLengthSec = rebaseWindowLengthSec_;
+        minTimestampSecAfterLastRebase = minTimestampSecAfterLastRebase_;
     }
 
     /**
@@ -219,6 +226,7 @@ contract UFragmentsPolicy is Ownable {
 
         rebaseLag = 30;
         rebaseWindowLengthSec = 1 days;
+        minTimestampSecAfterLastRebase = 1 days / 2; // 12 hours
         lastRebaseTimestampSec = 0;
         epoch = 0;
 
@@ -232,7 +240,8 @@ contract UFragmentsPolicy is Ownable {
      */
     function isNextWindow() public view returns (bool)
     {
-        return now.div(rebaseWindowLengthSec) > lastRebaseTimestampSec.div(rebaseWindowLengthSec);
+        return now.div(rebaseWindowLengthSec) > lastRebaseTimestampSec.div(rebaseWindowLengthSec) &&
+               now - lastRebaseTimestampSec > minTimestampSecAfterLastRebase;
     }
 
     /**
