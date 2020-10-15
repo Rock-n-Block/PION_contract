@@ -1,65 +1,29 @@
 {
-  "name": "uFragments",
-  "version": "0.0.1",
-  "description": "Ampleforth protocol smart contracts on Ethereum.",
-  "keywords": [
-    "ethereum",
-    "smart-contracts",
-    "solidity"
-  ],
-  "homepage": "https://github.com/ampleforth/uFragments#readme",
-  "bugs": {
-    "url": "https://github.com/ampleforth/uFragments/issues"
+  "name": "pion_contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ampleforth/uFragments.git"
+    "url": "git+https://github.com/Rock-n-Block/pion_contract.git"
   },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "author": "dev-support@ampleforth.org",
-  "scripts": {
-    "precommit": "./scripts/pre-commit.sh",
-    "coverage": "npx frg-coverage",
-    "lint": "npx eslint ./scripts ./test ./util *.js --cache --fix && npx solhint ./contracts/*.sol ./contracts/*/*.sol",
-    "setup-ganache": "npx start-chain ganacheUnitTest && npm run deploy-contracts ganacheUnitTest",
-    "test": "./scripts/test.sh"
+  "bugs": {
+    "url": "https://github.com/Rock-n-Block/pion_contract/issues"
   },
-  "pre-commit": {
-    "run": [
-      "precommit",
-      "lint"
-    ]
-  },
+  "homepage": "https://github.com/Rock-n-Block/pion_contract#readme",
   "dependencies": {
-    "app-root-path": "2.1.0",
-    "frg-ethereum-runners": "https://github.com/ampleforth/frg-ethereum-runners.git#v1.0.0-alpha",
-    "js-yaml": "^3.13.1",
-    "openzeppelin-eth": "2.0.2",
-    "truffle": "4.1.14"
-  },
-  "devDependencies": {
-    "@openzeppelin/test-environment": "^0.1.2",
-    "@openzeppelin/test-helpers": "^0.5.4",
-    "chai": "^4.1.2",
-    "chai-bignumber": "^2.0.2",
-    "coveralls": "^3.0.2",
-    "eslint": "^4.19.1",
-    "eslint-config-google": "^0.9.1",
-    "eslint-config-mocha": "0.0.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-config-standard": "^5.3.5",
-    "eslint-plugin-chai-friendly": "^0.4.1",
-    "eslint-plugin-import": "^1.16.0",
-    "eslint-plugin-mocha-only": "0.0.3",
-    "eslint-plugin-prettier": "^2.6.0",
-    "eslint-plugin-promise": "^1.3.2",
-    "eslint-plugin-spellcheck": "0.0.10",
-    "eslint-plugin-standard": "^1.3.3",
-    "lodash": ">=4.17.13",
-    "pre-commit": "^1.2.2",
-    "solhint": "^1.1.10",
-    "solidity-coverage": "0.5.8",
-    "stochasm": "^0.5.0",
-    "zos-lib": "^2.2.2"
+    "dotenv": "^8.2.0",
+    "openzeppelin-solidity": "^1.12.0",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "truffle-plugin-verify": "^0.4.0"
   }
 }
